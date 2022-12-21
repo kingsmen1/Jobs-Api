@@ -35,9 +35,9 @@ app.use(xss());
 // extra packages
 
 // routes
-app.get("/", (req, res) => {
-  res.send('<h1>Jobs API</h1><a href="/api-docs">Documentation</a>');
-});
+// app.get("/", (req, res) => {
+//   res.send('<h1>Jobs API</h1><a href="/api-docs">Documentation</a>');
+// });
 app.post("/api/v1/auth/register", async (req, res) => {
   // const { email, name, password } = req.body;
   // if (!email || !name || !password) {
