@@ -15,7 +15,7 @@ const { authRouter, jobsRouter } = require("./routes/index");
 const notFoundMiddleware = require("./middleware/not-found");
 const errorHandlerMiddleware = require("./middleware/error-handler");
 
-app.set("trust proxy", 1); //will solve proxy issues on deployment on heroky etc.used with "rateLimiter".
+// app.set("trust proxy", 1); //will solve proxy issues on deployment on heroky etc.used with "rateLimiter".
 app.use(
   rateLimiter({
     windowMs: 15 * 60 * 1000, // 15 minutes
