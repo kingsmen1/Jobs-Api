@@ -11,10 +11,9 @@ const mongoConnnect = require("./db/connect");
 const { auth } = require("./middleware/authentication");
 const { authRouter, jobsRouter } = require("./routes/index");
 const { StatusCodes } = require("http-status-codes");
-const { BadRequestError, UnauthenticatedError } = require("../errors");
-require("express-async-errors");
+const { BadRequestError, UnauthenticatedError } = require("./errors");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const User = require("./models/User");
 
 // error handler
 const notFoundMiddleware = require("./middleware/not-found");
