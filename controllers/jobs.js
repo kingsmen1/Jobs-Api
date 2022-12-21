@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const Job = require("../models/Job");
 const { NotFoundError } = require("../errors");
-const { BadRequestError } = require("../../final/errors");
+const { BadRequestError } = require("../errors");
 
 const getAllJobs = async (req, res) => {
   console.log(req.user.userId);
