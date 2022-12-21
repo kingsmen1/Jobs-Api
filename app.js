@@ -10,12 +10,17 @@ const app = express();
 const mongoConnnect = require("./db/connect");
 const { auth } = require("./middleware/authentication");
 const { authRouter, jobsRouter } = require("./routes/index");
+const { StatusCodes } = require("http-status-codes");
+const { BadRequestError, UnauthenticatedError } = require("../errors");
+require("express-async-errors");
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
 // error handler
 const notFoundMiddleware = require("./middleware/not-found");
 const errorHandlerMiddleware = require("./middleware/error-handler");
 
-// app.set("trust proxy", 1); //will solve proxy issues on deployment on heroky etc.used with "rateLimiter".
+app.set("trust proxy", 1); //will solve proxy issues on deployment on heroky etc.used with "rateLimiter".
 app.use(
   rateLimiter({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -32,10 +37,39 @@ app.use(xss());
 
 // routes
 app.get("/", (req, res) => {
-  res.send("Jobs api");
+  res.send('<h1>Jobs API</h1><a href="/api-docs">Documentation</a>');
 });
-app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/jobs", auth, jobsRouter);
+app.post("/api/v1/auth/register", async (req, res) => {
+  // const { email, name, password } = req.body;
+  // if (!email || !name || !password) {
+  //   throw new BadRequestError("Please provide Email , Name , Password");
+  // }
+  const user = await User.create({ ...req.body });
+  const token = user.createJwt();
+  console.log(token);
+  res.status(StatusCodes.CREATED).send({ user: { name: user.name }, token });
+});
+app.post("/api/v1/auth/login", async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    throw new BadRequestError("Please provide email and password");
+  }
+  const user = await User.findOne({ email }).select("+password");
+  const correctPassword = await user.correctPassword(password, user.password);
+  console.log(correctPassword);
+  if (!user || !correctPassword) {
+    console.log("correctPassword");
+    throw new UnauthenticatedError("Incorrect password or email.");
+  }
+  const token = user.createJwt();
+  res.status(StatusCodes.OK).json({
+    user: {
+      name: user.name,
+    },
+    token,
+  });
+});
+app.post("/api/v1/jobs", auth, jobsRouter);
 
 // app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
